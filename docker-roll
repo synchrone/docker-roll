@@ -1,0 +1,48 @@
+#!/bin/sh
+set -eu
+if [ "$1" = "docker-cli-plugin-metadata" ]; then
+cat << HERE
+{
+     "SchemaVersion": "0.1.0",
+     "Vendor": "https://github.com/synchrone/docker-roll",
+     "Version": "v0.1.0",
+     "ShortDescription": "Zero-downtime local docker-compose deployments"
+}
+HERE
+exit
+fi
+
+# docker plugin check is done, so $0 is now docker and $1 is roll
+shift # skip roll command from #*
+
+[ "$#" -lt 1 ] && echo "Usage $0 <SERVICE>" && exit
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+echo 'Performs a zero-downtime rollout of SERVICE using docker-compose scale SERVICE=2'
+exit
+fi
+
+docker compose > /dev/null || (echo "docker roll requires docker compose plugin" && exit 1)
+
+SERVICE="$1"
+
+OLD_CONTAINER="$(docker compose ps $SERVICE -q)"
+
+SCALE="$(echo "$OLD_CONTAINER" | wc -l)"
+[ "$SCALE" -gt 1 ] && echo "--scale must be 1 to perform roll" && exit 1
+
+echo Launching a new instance of $SERVICE
+docker compose up -d --scale "$SERVICE=2" --no-recreate --wait "$SERVICE"
+
+#echo PS:
+#docker compose ps -q $SERVICE
+
+echo "Stopping and removing the old instance of $SERVICE ($OLD_CONTAINER)"
+docker stop "$OLD_CONTAINER" > /dev/null
+docker rm "$OLD_CONTAINER" > /dev/null
+
+echo Scaling $SERVICE back to 1
+docker compose up -d --scale "$SERVICE=1" --no-recreate --wait "$SERVICE"
+#echo PS:
+#docker compose ps -q $SERVICE
+
+exit 0
