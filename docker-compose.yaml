@@ -1,0 +1,6 @@
+version: '3'
+services:
+  test:
+    image: busybox
+    command: [sh, -c, "trap 'exit 0' TERM; sleep infinity& wait"]
+
