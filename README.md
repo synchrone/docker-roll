@@ -2,7 +2,7 @@
 
 Performs a zero-downtime rollout of SERVICE using docker-compose scale SERVICE=2
 
-![shot.png](shot.png)
+[![asciicast](https://asciinema.org/a/nO3JUNQdM9E660Lg27Q1OAe35.svg)](https://asciinema.org/a/nO3JUNQdM9E660Lg27Q1OAe35)
 
 ## Installation
 ```
