@@ -1,6 +1,6 @@
 # Docker Roll 🚤
 
-Performs a zero-downtime rollout of SERVICE using docker-compose scale SERVICE=2
+Performs a zero-downtime rollout of `service` using `docker compose up -d --scale SERVICE=2`
 
 [![asciicast](https://asciinema.org/a/nO3JUNQdM9E660Lg27Q1OAe35.svg)](https://asciinema.org/a/nO3JUNQdM9E660Lg27Q1OAe35)
 
